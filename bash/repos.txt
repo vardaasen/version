@@ -1,0 +1,19 @@
+Core,neovim/neovim
+Core,BurntSushi/ripgrep
+Core,jqlang/jq
+Core,git/git
+Core,cli/cli
+JS Frontend,denoland/deno
+JS Frontend,vitejs/vite
+JS Frontend,vuejs/core
+JS Frontend,facebook/react
+Python,python/cpython
+Python,astral-sh/ruff
+Python,psf/black
+Jupyter,jupyter/notebook
+Jupyter,jupyter-widgets/ipywidgets
+Jupyter,ipython/ipython
+Data Science,numpy/numpy
+Data Science,pandas-dev/pandas
+Data Science,matplotlib/matplotlib
+Data Science,scipy/scipy

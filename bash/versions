@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+. "./versions_arrays.sh"
+. "./db_functions.sh"
+. "./versions_functions.sh"
+
+# --- CONFIGURATION ---
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+REPO_FILE="${REPO_FILE:-$script_dir/repos.txt}"
+CACHE_DURATION=${CACHE_DURATION:-3600}  # Default: 1 hour
+
+# ANSI Color Codes
+declare -A colors
+colors=([GREEN]="\033[0;32m" [YELLOW]="\033[0;33m" [RED]="\033[0;31m" [NC]="\033[0m")
+CYAN='\033[0;36m'
+
+
+main() {
+  [[ -z "$GITHUB_TOKEN" ]] && die "E_NO_TOKEN"
+
+  init_db
+  
+  local time_since_success_str
+  time_since_success_str=$(calculate_last_success)
+  TIME_STR="$time_since_success_str" print_template
+
+  local output_buffer=""
+  local current_category=""
+  local current_time
+  local cached_version
+  local last_checked
+  local last_status
+  local version_to_print
+  local color
+  local category
+  local repo
+  local status
+
+  # Ensure repo file exists; otherwise bail with clear error (on stderr)
+  [[ -f "$REPO_FILE" ]] || die "E_NO_REPOS" "$REPO_FILE"
+
+  while IFS=, read -r category repo || [[ -n "$repo" ]]; do
+    
+    [[ -n "$category" && -n "$repo" ]] || continue
+
+    category=$(echo "$category" | tr -d '[:space:]')
+    repo=$(echo "$repo" | tr -d '[:space:]')
+
+    [[ -n "$category" && -n "$repo" ]] || continue
+    current_time=$(date +%s)
+    cached_version=""
+    last_checked=""
+    last_status=""
+    read -r cached_version last_checked last_status <<< "$(get_cached_repo_data "$repo")"
+    cached_data=$(get_cached_repo_data "$repo")
+echo "DEBUG: [$repo] cached_data=[$cached_data]" >&2
+read -r cached_version last_checked last_status <<< "$cached_data"
+echo "DEBUG: [$repo] parsed: v=[$cached_version] t=[$last_checked] s=[$last_status]" >&2
+    version_to_print=""
+    color=${colors[NC]}
+
+    determine_repo_status
+  
+    if [[ "$category" != "$current_category" ]]; then
+      output_buffer+="\n${CYAN}--- ${category} ---${colors[NC]}\n"
+      current_category="$category"
+    fi
+
+    output_buffer+="$(get_repo_line)\n"
+  done < "$REPO_FILE"
+
+  printf '%b' "$output_buffer"
+  print_separator
+}
+
+main "$@"

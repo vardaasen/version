@@ -1,0 +1,28 @@
+Core:
+  - neovim/neovim
+  - BurntSushi/ripgrep
+  - jqlang/jq
+  - git/git
+  - cli/cli
+
+JS Frontend:
+  - denoland/deno
+  - vitejs/vite
+  - vuejs/core
+  - facebook/react
+
+Python:
+  - python/cpython
+  - astral-sh/ruff
+  - psf/black
+
+Jupyter:
+  - jupyter/notebook
+  - jupyter-widgets/ipywidgets
+  - ipython/ipython
+
+Data Science:
+  - numpy/numpy
+  - pandas-dev/pandas
+  - matplotlib/matplotlib
+  - scipy/scipy
